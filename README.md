@@ -6,8 +6,8 @@ Official documentation for the LiveTradingLeague platform, specifically tailored
 
 | Version | Date | Description | Link |
 |:---|:---|:---|:---|
-| **v1.2** | 2026-02-05 | **Current Version** - Final Broker Integration Requirements | [View Requirements v1.2](https://github.com/livetradingcoder/trade-cmp/blob/main/.docs/REQUIREMENTS_BROKER_INTEGRATION_v1.2.md) |
-| **v1.1** | 2026-01-28 | Initial Broker Integration Draft | [View Requirements v1.1](https://github.com/livetradingcoder/trade-cmp/blob/main/.docs/REQUIREMENTS_BROKER_INTEGRATION_v1.1.md) |
+| **v1.2** | 2026-02-05 | **Current Version** - Final Broker Integration Requirements | [View Requirements v1.2](https://github.com/livetradingcoder/trade-cmp/blob/new/.docs/REQUIREMENTS_BROKER_INTEGRATION_v1.2.md) |
+| **v1.1** | 2026-01-28 | Initial Broker Integration Draft | [View Requirements v1.1](https://github.com/livetradingcoder/trade-cmp/blob/new/.docs/REQUIREMENTS_BROKER_INTEGRATION_v1.1.md) |
 | **v1.0** | 2026-01-15 | Project Inception & Initial Scoping | - |
 
 ---
