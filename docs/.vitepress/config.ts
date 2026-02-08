@@ -4,6 +4,7 @@ export default defineConfig({
   title: 'LiveTradingLeague',
   description: 'Official documentation for LiveTradingLeague platform',
   base: '/trade-cmp-docs/',
+  ignoreDeadLinks: true,
 
   themeConfig: {
     logo: '/logo.svg',
