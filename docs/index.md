@@ -50,6 +50,36 @@ features:
     details: Docker deployment, MongoDB database, and scalable architecture for production use.
 ---
 
+
+## 📜 Document History
+
+| Version | Date | Description | Link |
+|:---|:---|:---|:---|
+| **v1.2** | 2026-02-05 | **Current Version** - Final Broker Integration Requirements | [View Requirements v1.2](/requirements/v1.2) |
+| **v1.1** | 2026-01-28 | Initial Broker Integration Draft | [View Requirements v1.1](/requirements/v1.1) |
+| **v1.0** | 2026-01-15 | Project Inception & Initial Scoping | - |
+
+## 🏗️ System Architecture
+
+```mermaid
+flowchart TB
+    subgraph "LiveTradingLeague Platform"
+        WEB[Web Application]
+        API[Backend API]
+        DB[(Database - MongoDB)]
+    end
+
+    subgraph "FP Markets"
+        BROKER_API[Broker API]
+        BROKER_DB[(Trading Data)]
+    end
+
+    WEB --> API
+    API --> DB
+    API <-->|Account Validation| BROKER_API
+    BROKER_API --> BROKER_DB
+```
+
 ## Quick Start
 
 Get up and running in minutes:

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 
-export default defineConfig({
+export default withMermaid({
   title: 'LiveTradingLeague',
   description: 'Official documentation for LiveTradingLeague platform',
   base: '/trade-cmp-docs/',
