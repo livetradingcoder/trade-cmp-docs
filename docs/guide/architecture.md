@@ -75,6 +75,24 @@ trade-cmp/
 5. Cloudinary returns secure URL
 6. URL stored in tournament document
 
+## Broker Integration & Sync
+
+A pluggable `BrokerConnector` layer (`services/brokers/`) abstracts data sources:
+`fixture`, `simulation`, and the live **`fpmarkets`** connector (HMAC-signed
+calls to the FP Markets Account Performance API). The sync layer
+(`services/sync/`) pulls broker data, writes snapshots, computes the
+leaderboard, and caches it:
+
+```
+[Scheduler / admin] → syncTournament → fpMarketsConnector → FP Markets API
+                                     → AccountSnapshot / Trade (MongoDB)
+                                     → calculateLeaderboard → LeaderboardCache
+```
+
+Outbound broker calls leave through a **static egress IP** (Railway egress
+gateway) so the broker can whitelist us. See
+[FP Markets Sync](/guide/fp-markets-sync) and [Database Models](/guide/models).
+
 ## Deployment Architecture
 
 ### Single Container Approach

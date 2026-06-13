@@ -101,15 +101,18 @@ npm run dev
 
 ## Latest Updates
 
+### Version 1.1.0 (June 2026)
+
+- ✅ Live FP Markets integration — signed connector + sync pipeline ([FP Markets Sync](/guide/fp-markets-sync))
+- ✅ Leaderboard computed from broker data and served from cache
+- ✅ Deployed on Railway (single container) with a **static egress IP** for the broker whitelist
+- ✅ Custom domain via Cloudflare; resilient MongoDB connection (no crash-loop)
+
 ### Version 1.0.0 (February 2026)
 
-- ✅ Complete broker integration with FP Markets
+- ✅ Broker integration scaffold with FP Markets (mock endpoints)
 - ✅ User registration and participant management
-- ✅ Admin dashboard with comprehensive controls
-- ✅ Email notification system
-- ✅ Real-time leaderboard tracking
-- ✅ SMTP configuration management
-- ✅ Production-ready Docker deployment
+- ✅ Admin dashboard, email notifications, SMTP configuration
 
 [View full changelog →](/changelog)
 
@@ -118,9 +121,9 @@ npm run dev
 LiveTradingLeague is built as a modern full-stack application:
 
 - **Frontend**: React 19 + TypeScript + Vite
-- **Backend**: Node.js + Express + MongoDB
+- **Backend**: Node.js 22 + Express + MongoDB
 - **Authentication**: JWT-based secure authentication
-- **Deployment**: Docker + Docker Compose
+- **Deployment**: Railway single container (nginx + Express) — [details](/deployment/railway)
 - **Monorepo**: Turborepo for efficient builds
 
 [Learn more about the architecture →](/guide/architecture)
@@ -130,4 +133,4 @@ LiveTradingLeague is built as a modern full-stack application:
 - 📖 [Documentation](/)
 - 💬 [GitHub Discussions](https://github.com/livetradingcoder/trade-cmp/discussions)
 - 🐛 [Issue Tracker](https://github.com/livetradingcoder/trade-cmp/issues)
-- 📧 [Email Support](mailto:livetradingcoderlive-trading-league@proton.me)
+- 📧 [Email Support](mailto:live-trading-league@proton.me)

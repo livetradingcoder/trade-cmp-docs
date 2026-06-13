@@ -241,4 +241,4 @@ If you encounter issues:
 1. Check the [Troubleshooting](/getting-started/installation#troubleshooting) section
 2. Review the [Testing Guide](/getting-started/testing)
 3. [Open an issue](https://github.com/livetradingcoder/trade-cmp/issues) on GitHub
-4. Email support: livetradingcoderlive-trading-league@proton.me
+4. Email support: live-trading-league@proton.me

@@ -1,144 +1,106 @@
-# LiveTradingLeague - Server Documentation
+# Server Documentation
 
 ## Entry Point
-`packages/server/src/index.ts`
+`packages/server/src/index.ts` — Express app. On boot it connects to MongoDB,
+starts listening, and (unless serverless) starts the sync scheduler.
 
 ## Directory Structure
 
 ```
 packages/server/src/
-├── index.ts              # Express server setup & routes
+├── index.ts                      # Express setup & routes
 ├── config/
-│   ├── database.ts       # MongoDB connection, auto-seeding
-│   └── cloudinary.ts     # Image upload configuration
+│   ├── database.ts               # MongoDB connect (retries, no crash-loop) + auto-seed
+│   └── cloudinary.ts             # Image upload config
 ├── middleware/
-│   ├── auth.ts           # JWT generation & verification
-│   └── upload.ts         # Multer file upload config
-├── models/
-│   ├── Tournament.ts     # Tournament data model
-│   ├── Admin.ts          # Admin user model
-│   └── Settings.ts       # Key-value settings model
-├── utils/
-│   └── email.ts          # Password reset emails
-└── seed.ts               # Database initialization
+│   ├── auth.ts                   # JWT generation & verification
+│   └── upload.ts                 # Multer file upload
+├── models/                       # Mongoose schemas — see Database Models
+├── services/
+│   ├── brokers/
+│   │   ├── types.ts              # BrokerConnector interface
+│   │   ├── index.ts              # connector registry (fixture | simulation | fpmarkets)
+│   │   ├── fixtureConnector.ts
+│   │   ├── simulationConnector.ts
+│   │   └── fpMarketsConnector.ts # live FP Markets (HMAC-signed)
+│   ├── sync/
+│   │   ├── syncTournament.ts     # orchestration
+│   │   ├── buildLeaderboard.ts   # pure mapping helpers
+│   │   └── scheduler.ts          # gated hourly scheduler
+│   └── leaderboard/
+│       └── calculateLeaderboard.ts
+├── utils/                        # email, encryption, smtp
+└── seed.ts
 ```
+
+See [Database Models](/guide/models) and [FP Markets Sync](/guide/fp-markets-sync).
 
 ## API Endpoints
 
 ### Authentication
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/admin/login` | Admin login | No |
-| POST | `/api/admin/forgot-password` | Request reset | No |
-| POST | `/api/admin/reset-password/:token` | Reset password | No |
-| GET | `/api/admin/verify` | Verify token | Yes |
-| POST | `/api/admin/change-password` | Change password | Yes |
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| POST | `/api/admin/login` | No |
+| POST | `/api/admin/forgot-password` | No |
+| POST | `/api/admin/reset-password/:token` | No |
+| GET | `/api/admin/verify` | Yes |
+| POST | `/api/admin/change-password` | Yes |
 
 ### Tournaments
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/tournaments` | List all | No |
-| GET | `/api/tournaments/:id` | Get one | No |
-| POST | `/api/tournaments` | Create | Yes |
-| PUT | `/api/tournaments/:id` | Update | Yes |
-| DELETE | `/api/tournaments/:id` | Delete | Yes |
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| GET | `/api/tournaments` / `/api/tournaments/:id` | No |
+| POST | `/api/tournaments` | Yes |
+| PUT | `/api/tournaments/:id` | Yes |
+| DELETE | `/api/tournaments/:id` | Yes |
 
-### Settings
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/settings` | Get all | No |
-| GET | `/api/settings/:key` | Get by key | No |
-| PUT | `/api/settings/:key` | Update | Yes |
+### Users & Participants
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| POST | `/api/users/register` | No |
+| GET | `/api/users/:id` | No |
+| POST | `/api/participants/apply` | No |
+| GET | `/api/participants/:tournamentId` | Yes |
+| PUT | `/api/participants/:id/approve` \| `/decline` \| `/disqualify` | Yes |
 
-### Upload
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/upload` | Upload image | Yes |
+### Broker Sync — FP Markets
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| POST | `/api/admin/sync/:tournamentId` | Yes |
+| GET | `/api/admin/fp-test` | Yes |
+| GET | `/api/leaderboard/:tournamentId` | Yes |
 
-### Health
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/health` | Server status |
+### Settings / Upload / Health
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| GET | `/api/settings` / `/api/settings/:key` | No |
+| PUT | `/api/settings/:key` | Yes |
+| POST | `/api/upload` | Yes |
+| GET | `/api/health` | No |
+| GET | `/api/egress-ip` | No (temporary bootstrap helper) |
 
-## Data Models
+## Sync Scheduler
 
-### Tournament
-```typescript
-{
-  _id: ObjectId,
-  title: string,
-  tier: string,           // "Weekly" | "Monthly" | "Bi-Weekly"
-  prize: string,          // e.g., "50K Challenge"
-  fee: string,            // e.g., "$10"
-  participants: number,
-  timeLabel: string,      // "Seats Left" | "Ends in" | "Starts in"
-  timeLeft: string,       // e.g., "27d 20:17:59"
-  cover: string,          // Tournament image URL
-  image?: string,         // Additional image
-  registrationLink: string,
-  createdAt: Date,
-  updatedAt: Date
-}
-```
+`services/sync/scheduler.ts` runs every active tournament on an interval. It is
+**disabled by default**; enable with `SYNC_ENABLED=true` (only after the broker
+has whitelisted our IP). Interval via `SYNC_INTERVAL_MINUTES` (default 60).
 
-### Admin
-```typescript
-{
-  _id: ObjectId,
-  username: string,       // unique
-  email: string,          // unique
-  password: string,       // bcrypt hashed
-  resetPasswordToken?: string,
-  resetPasswordExpires?: Date,
-  createdAt: Date,
-  updatedAt: Date
-}
-```
+## Resilience
 
-### Settings
-```typescript
-{
-  key: string,            // unique, e.g., "affiliateCode"
-  value: string,
-  updatedAt: Date
-}
-```
+`config/database.ts` **retries** the MongoDB connection on failure instead of
+calling `process.exit(1)` — the server (and `/api/health`) stay up so the host
+does not crash-loop before the DB IP allow list is ready.
 
 ## Environment Variables
 
-### Required
-| Variable | Description |
-|----------|-------------|
-| `MONGODB_URI` or `DATABASE_URL` | MongoDB connection string |
-| `JWT_SECRET` | JWT signing key |
-
-### Cloudinary (for image uploads)
-| Variable | Description |
-|----------|-------------|
-| `CLOUDINARY_CLOUD_NAME` | Cloud name |
-| `CLOUDINARY_API_KEY` | API key |
-| `CLOUDINARY_API_SECRET` | API secret |
-
-### Email (for password reset)
-| Variable | Description |
-|----------|-------------|
-| `EMAIL_HOST` | SMTP host |
-| `EMAIL_PORT` | SMTP port |
-| `EMAIL_USER` | SMTP username |
-| `EMAIL_PASS` | SMTP password |
-| `FRONTEND_URL` | Frontend URL for reset links |
-
-### Defaults
-| Variable | Default |
-|----------|---------|
-| `ADMIN_USERNAME` | "ltl-admin-1" |
-| `ADMIN_PASSWORD` | "Adm!n2026" |
-| `JWT_SECRET` | "your-secret-key-change-in-production" |
+See [Environment Variables](/deployment/environment) for the full reference
+(core, FP Markets, Cloudinary, email, frontend).
 
 ## Security Features
 
-- **Password Hashing:** bcrypt with 10-salt rounds
-- **Reset Tokens:** SHA256 hashed, 1-hour expiration
-- **JWT:** 7-day token validity
-- **File Upload:** Whitelist (jpeg, jpg, png, gif, webp), 5MB limit
-- **CORS:** Enabled via middleware
+- **Password hashing:** bcrypt (10 rounds)
+- **Reset tokens:** SHA-256, 1-hour expiry
+- **JWT:** 7-day validity
+- **Encryption:** AES-256-CBC for stored secrets (e.g. SMTP password)
+- **FP Markets:** per-request HMAC-SHA256 signature; static egress IP whitelist
+- **File upload:** type whitelist, 5 MB limit

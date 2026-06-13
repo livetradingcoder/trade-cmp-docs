@@ -1,5 +1,12 @@
 # Production Deployment
 
+::: tip Current production target
+LiveTradingLeague runs in production on **Railway** (single container + static
+egress IP for the broker whitelist). See **[Railway Deployment](/deployment/railway)**
+for the live setup. This page documents the generic Docker/self-hosted path and
+the full production checklist, which still apply.
+:::
+
 This guide covers deploying LiveTradingLeague to a production environment.
 
 ## Prerequisites
@@ -371,5 +378,5 @@ docker-compose up -d
 ## Support
 
 For production deployment support:
-- Email: livetradingcoderlive-trading-league@proton.me
+- Email: live-trading-league@proton.me
 - GitHub Issues: https://github.com/livetradingcoder/trade-cmp/issues

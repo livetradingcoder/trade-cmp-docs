@@ -227,6 +227,12 @@ db.participants.findOne({ user_id: <user_id> })
 
 **Objective:** Verify mock broker endpoints return correct data
 
+::: tip Live integration
+The `/api/broker/*` endpoints below are **mock** stubs for local development.
+To verify the real FP Markets integration end to end, use
+`GET /api/admin/fp-test` — see [FP Markets Sync](/guide/fp-markets-sync#verifying-the-integration).
+:::
+
 ### Steps:
 
 1. **Test Account Validation**

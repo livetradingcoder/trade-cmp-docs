@@ -49,10 +49,12 @@ LiveTradingLeague is built with modern, production-ready technologies:
 - Nodemailer for email services
 
 **Infrastructure**:
-- Docker for containerization
+- Railway single-container deployment (nginx + Express) with a static egress IP
+- Docker (`node:22-alpine`) for the container image
+- MongoDB Atlas database; Cloudflare DNS / custom domain
 - Turborepo for monorepo management
 - Cloudinary for image hosting
-- GitHub Actions for CI/CD
+- GitHub Actions for CI/CD (and docs → GitHub Pages)
 
 ## Architecture Overview
 
@@ -91,7 +93,7 @@ Need help? Here's how to get support:
 
 - **Documentation**: Browse this documentation site
 - **GitHub Issues**: [Report bugs or request features](https://github.com/livetradingcoder/trade-cmp/issues)
-- **Email**: livetradingcoderlive-trading-league@proton.me
+- **Email**: live-trading-league@proton.me
 
 ## License
 
