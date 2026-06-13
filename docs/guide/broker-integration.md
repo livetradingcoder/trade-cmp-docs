@@ -1,8 +1,16 @@
 # Broker Integration Implementation Summary
 
+::: warning Superseded
+This page documents the original **mock** broker design (participant management +
+`/api/broker/*` stubs). The live FP Markets integration — the signed connector,
+sync service, scheduler, and proof endpoints — is documented in
+[FP Markets Sync](/guide/fp-markets-sync). Participant management below is still
+current.
+:::
+
 **Date:** February 7, 2026
 **Status:** ✅ Complete - Ready for Testing
-**Branch:** `new`
+**Branch:** `main`
 
 ## Overview
 

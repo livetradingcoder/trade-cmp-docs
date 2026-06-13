@@ -5,6 +5,30 @@ All notable changes to LiveTradingLeague will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-06-13
+
+### Added
+
+#### FP Markets Live Integration
+- `fpMarketsConnector` — signed (HMAC-SHA256) calls to the broker's Account
+  Performance API, mapping balances to snapshots (`roi`/raw trades unsupported)
+- `syncTournament` orchestration: eligible accounts → connector → upsert
+  snapshots/trades → `calculateLeaderboard` → `LeaderboardCache` + `SyncRun`
+- Hourly sync scheduler, gated by `SYNC_ENABLED` (default off)
+- `POST /api/admin/sync/:tournamentId` — trigger a sync
+- `GET /api/admin/fp-test` — live signed probe proving auth + signing + IP whitelist
+- `GET /api/leaderboard/:tournamentId` now reads computed rankings from `LeaderboardCache`
+
+#### Deployment
+- Full-stack single-container deployment on **Railway** (nginx + Express)
+- **Static egress IP** via Railway egress gateway (broker IP whitelist); IPv6 egress disabled
+- Custom domain `app.livetradingleague.com` via Cloudflare DNS
+- MongoDB connection now retries instead of exiting (no deploy crash-loop)
+
+### Changed
+- Default branch is now `main`
+- Bumped Docker base image to Node 22
+
 ## [1.0.0] - 2026-02-08
 
 ### Added

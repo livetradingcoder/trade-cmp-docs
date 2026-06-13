@@ -16,7 +16,7 @@ export default withMermaid({
       { text: 'Guide', link: '/guide/architecture' },
       { text: 'API', link: '/api/overview' },
       {
-        text: 'v1.0.0',
+        text: 'v1.1.0',
         items: [
           { text: 'Changelog', link: '/changelog' },
           { text: 'Contributing', link: '/contributing' }
@@ -65,6 +65,7 @@ export default withMermaid({
         {
           text: 'Features',
           items: [
+            { text: 'FP Markets Sync', link: '/guide/fp-markets-sync' },
             { text: 'Broker Integration', link: '/guide/broker-integration' },
             { text: 'Email System', link: '/guide/email-system' },
             { text: 'Participant Management', link: '/guide/participant-management' }
@@ -90,6 +91,7 @@ export default withMermaid({
         {
           text: 'Deployment',
           items: [
+            { text: 'Railway (Production)', link: '/deployment/railway' },
             { text: 'Production Setup', link: '/deployment/production' },
             { text: 'Docker Deployment', link: '/deployment/docker' },
             { text: 'Environment Variables', link: '/deployment/environment' }

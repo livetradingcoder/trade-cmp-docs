@@ -121,7 +121,14 @@ Currently, there are no rate limits implemented. This may change in future versi
 - `PUT /api/settings/:key` - Update setting (admin)
 - `POST /api/settings/smtp/test` - Test SMTP configuration (admin)
 
-### Broker API (Mock)
+### Broker Sync — FP Markets
+
+See [FP Markets Sync](/guide/fp-markets-sync).
+
+- `POST /api/admin/sync/:tournamentId` - Trigger a broker sync now (admin)
+- `GET /api/admin/fp-test` - Live signed probe to FP Markets; proves auth + signing + IP whitelist (admin)
+
+### Broker API (Mock — legacy, dev only)
 
 - `POST /api/broker/validate` - Validate account
 - `GET /api/broker/info` - Get account info
@@ -129,7 +136,7 @@ Currently, there are no rate limits implemented. This may change in future versi
 
 ### Leaderboard
 
-- `GET /api/leaderboard/:tournamentId` - Get tournament leaderboard (admin)
+- `GET /api/leaderboard/:tournamentId` - Get tournament leaderboard from `LeaderboardCache` (admin)
 
 ## Common Patterns
 
