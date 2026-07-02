@@ -1,6 +1,6 @@
 # FP Markets Sync
 
-**Status:** ✅ Built & deployed — pending broker IP whitelist for the live proof.
+**Status:** 🟡 Built, deployed, IP whitelisted — live testing in progress (partial data from broker).
 
 This page documents the **real** FP Markets integration: the signed connector that
 calls the broker's Account Performance API, the sync service that turns broker
@@ -8,6 +8,27 @@ data into leaderboard rankings, and the endpoints that drive it.
 
 > The earlier mock endpoints (`/api/broker/*`) are superseded by this connector.
 > See [Broker Integration](/guide/broker-integration) for the original mock design.
+
+## Current Live Test Status
+
+Our static outbound IPs are whitelisted and the signed probe (`GET /api/admin/fp-test`)
+succeeds — auth, HMAC signature, and rebate acceptance are all confirmed working.
+The remaining gap is on the broker's side:
+
+| Check | Result |
+|-------|--------|
+| IP whitelisted | ✅ |
+| Auth (token + HMAC-SHA256 signature) | ✅ |
+| Rebate/IB `477779` accepted | ✅ |
+| Accounts returned | ⚠️ **1 of 2 expected**. FP's own IB client portal (`fptrading.com/ib/accounts/clients`) shows 2 approved clients under rebate `477779`; the Account Performance API returns only 1 (`account_number: "2058014"`). Reported to FP as a broker-side gap. |
+| Usable balance/trade data | ⚠️ Not yet — the 1 returned account has `starting_balance`/`current_balance` = 0 and `last_trade_at` = null |
+
+**Once FP resolves this**, the next step is a full `POST /api/admin/sync/:tournamentId`
+run against a real tournament + participant, to validate snapshots → leaderboard
+cache → ranked ROI end to end (see [Verifying the Integration](#verifying-the-integration)
+below for the quick probe, and [The Sync Service](#the-sync-service) for the full
+pipeline this unblocks). Tracked as milestone v1.1 in the app repo's
+`.planning/ROADMAP.md` (Phase 2 — Live Verification).
 
 ---
 

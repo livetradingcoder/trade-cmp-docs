@@ -2,13 +2,42 @@
 
 Official documentation for the LiveTradingLeague platform, specifically tailored for broker partners (FP Markets) and external stakeholders. This guide outlines the system architecture, user flows, and technical requirements for integration.
 
+**Full docs site (build of this repo):** https://livetradingcoder.github.io/trade-cmp-docs/
+
 ## 📜 Document History
 
 | Version | Date | Description | Link |
 |:---|:---|:---|:---|
-| **v1.2** | 2026-02-05 | **Current Version** - Final Broker Integration Requirements | [View Requirements v1.2](https://github.com/livetradingcoder/trade-cmp/blob/new/.docs/REQUIREMENTS_BROKER_INTEGRATION_v1.2.md) |
-| **v1.1** | 2026-01-28 | Initial Broker Integration Draft | [View Requirements v1.1](https://github.com/livetradingcoder/trade-cmp/blob/new/.docs/REQUIREMENTS_BROKER_INTEGRATION_v1.1.md) |
+| **v1.1 (app)** | 2026-06 | Live FP Markets integration built, deployed, and under live testing | [FP Markets Sync guide](https://livetradingcoder.github.io/trade-cmp-docs/guide/fp-markets-sync) |
+| **v1.2** | 2026-02-05 | Final Broker Integration Requirements (original ask, pre-delivery) | [View Requirements v1.2](https://github.com/livetradingcoder/trade-cmp/blob/main/.docs/REQUIREMENTS_BROKER_INTEGRATION_v1.2.md) |
+| **v1.1** | 2026-01-28 | Initial Broker Integration Draft | [View Requirements v1.1](https://github.com/livetradingcoder/trade-cmp/blob/main/.docs/REQUIREMENTS_BROKER_INTEGRATION_v1.1.md) |
 | **v1.0** | 2026-01-15 | Project Inception & Initial Scoping | - |
+
+---
+
+## 🔴 Current Integration & Test Status
+
+FP Markets delivered their **Account Performance API** (`POST /api/account/performance`
+on `https://ibbeta.fptrading.com`) — a different shape than the original draft
+spec below (see [FP Markets Sync](https://livetradingcoder.github.io/trade-cmp-docs/guide/fp-markets-sync)
+for the real, implemented contract). We built and deployed against it; the
+sections below this one describe our **original ask**, kept for historical
+context, not what's currently live.
+
+**Live status as of the last check:**
+
+| Check | Result |
+|-------|--------|
+| Our static outbound IP whitelisted by broker | ✅ |
+| Auth (token + timestamp + HMAC-SHA256 signature) | ✅ verified live |
+| Rebate/IB account `477779` accepted | ✅ |
+| Accounts returned for our IB | ⚠️ **1 of 2 expected** — FP's own IB client portal shows 2 approved clients under `477779`; the Account Performance API returns only 1. Reported to FP as a broker-side gap. |
+| Usable balance/trade data | ⚠️ Not yet — the 1 returned account has $0 balance and no trade activity |
+
+Full live-test log: `.planning/STATE.md` in the [trade-cmp](https://github.com/livetradingcoder/trade-cmp) repo.
+Once FP resolves the account mapping and adds real activity, the next step is a
+full sync run to validate the leaderboard pipeline end to end — see
+[FP Markets Sync → Verifying the Integration](https://livetradingcoder.github.io/trade-cmp-docs/guide/fp-markets-sync#verifying-the-integration).
 
 ---
 
@@ -102,9 +131,17 @@ flowchart TD
 
 ---
 
-## 🔌 Broker API Requirements
+## 🔌 Broker API — Original Requirements (Historical Draft)
 
-We require the following endpoints to be exposed by the broker partner (FP Markets).
+::: warning Superseded by the delivered API
+This section documents what we originally **asked** FP Markets for. What they
+**actually built and delivered** — the endpoint we integrated and deployed
+against — is documented in
+[FP Markets Sync](https://livetradingcoder.github.io/trade-cmp-docs/guide/fp-markets-sync).
+Field names, auth, and response shape differ from the draft below.
+:::
+
+We required the following endpoints to be exposed by the broker partner (FP Markets).
 
 ### 1. Account Validation
 
@@ -139,7 +176,7 @@ Validates that an account exists, is active, and was created using the correct r
 }
 ```
 
-### 2. Performance Data
+### 2. Performance Data (draft — see FP Markets Sync for what was actually delivered)
 
 **Endpoint:** `POST /api/account/performance`
 
@@ -186,7 +223,7 @@ Retrieves trading performance metrics for a list of accounts to generate the com
 Instructions for running this documentation site locally.
 
 ### Prerequisites
-- Node.js 18+
+- Node.js 20+
 - npm or yarn
 
 ### Setup
@@ -210,3 +247,5 @@ npm run docs:build
 # Preview production build
 npm run docs:preview
 ```
+
+Pushing to `main` auto-deploys to GitHub Pages via `.github/workflows/deploy.yml`.
